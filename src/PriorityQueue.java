@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * This class represents a Priority Queue (heap) based on the ordering
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 public class PriorityQueue<E extends Comparable<E>> {
 
     private ArrayList<E> myHeap; //array representation of the heap
-
+    private int mySize;
     /**
      * Creates an empty Priority Queue
      */
@@ -25,7 +26,9 @@ public class PriorityQueue<E extends Comparable<E>> {
      * @param element the element to be added
      */
     public void add(E element) {
-
+        mySize++;
+        myHeap.add(element);
+        shiftUp(myHeap.size() - 1);
     }
 
     /**
@@ -36,7 +39,11 @@ public class PriorityQueue<E extends Comparable<E>> {
      * @param posTwo the second element's position in the queue
      */
     private void swap(int posOne, int posTwo) {
-
+        if (posOne >= 0 && posTwo < myHeap.size()) {
+            E temp = myHeap.get(posOne);
+            myHeap.set(posOne, myHeap.get(posTwo));
+            myHeap.set(posTwo, temp);
+        }
     }
 
     /**
@@ -46,7 +53,7 @@ public class PriorityQueue<E extends Comparable<E>> {
      * @return true if the element is in the queue, false otherwise
      */
     public boolean contains(E element) {
-        return false;
+        return myHeap.contains(element);
     }
 
     /**
@@ -56,7 +63,10 @@ public class PriorityQueue<E extends Comparable<E>> {
      * @return the element of highest priority queue
      */
     public E peek() {
-        return null;
+        if(mySize == 0){
+            return null;
+        }
+        return myHeap.get(0);
     }
 
     /**
@@ -66,7 +76,13 @@ public class PriorityQueue<E extends Comparable<E>> {
      * @return the element of highest priority
      */
     public E poll() {
-        return null;
+        if(mySize == 0){
+            return null;
+        }
+        E removed = myHeap.remove(0);
+        mySize--;
+        shiftDown(0);
+        return removed;
     }
 
     /**
@@ -75,7 +91,33 @@ public class PriorityQueue<E extends Comparable<E>> {
      *
      * @param pos the starting position for heapify
      */
-    private void heapify(int pos) {
+    private void shiftUp(int pos) {
+        int parent = (pos - 1) / 2;
+        while(pos > 0 && myHeap.get(parent).compareTo(myHeap.get(pos)) > 0){
+            swap(parent, pos);
+            pos = parent;
+            parent = (pos - 1) / 2;
+        }
+    }
+
+    private void shiftDown(int pos) {
+        int lowest = pos;
+        int r = 2 * pos + 1;
+        int l =  2 * pos + 2;
+
+        if(l < mySize && myHeap.get(l).compareTo(myHeap.get(pos)) < 0){
+            lowest = l;
+        }
+
+        if(r < mySize && myHeap.get(r).compareTo(myHeap.get(lowest)) < 0){
+            lowest = r;
+        }
+
+        if(lowest != pos){
+            swap(pos, lowest);
+            shiftDown(lowest);
+        }
+
 
     }
 
@@ -88,6 +130,13 @@ public class PriorityQueue<E extends Comparable<E>> {
      * @return true if an element was removed from the queue, false otherwise
      */
     public boolean remove(E element) {
+        if(myHeap.contains(element)){
+            int index = myHeap.indexOf(element);
+            myHeap.remove(element);
+            mySize--;
+            shiftDown(index);
+            return true;
+        }
         return false;
     }
 
@@ -97,7 +146,7 @@ public class PriorityQueue<E extends Comparable<E>> {
      * @return the number of elements in the queue
      */
     public int size() {
-        return -1;
+        return mySize;
     }
 
     /**
@@ -108,7 +157,11 @@ public class PriorityQueue<E extends Comparable<E>> {
      * @return the String representation of the heap
      */
     public String toString() {
-        return "toString";
+        String end = "";
+        for(int i = 0; i < mySize; i++){
+            end += myHeap.get(i).toString() + " ";
+        }
+        return end;
     }
 
 
@@ -119,7 +172,40 @@ public class PriorityQueue<E extends Comparable<E>> {
      * @param args
      */
     public static void main(String[] args) {
-// TODO Auto-generated method stub
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        Scanner sc = new Scanner(System.in);
+        while(true){
+            System.out.println("Choose an option");
+            System.out.println("1. Add an element");
+            System.out.println("2. Remove an element");
+            System.out.println("3. Remove 1st element");
+            System.out.println("4. Display all elements");
+            System.out.println("5. Check current top element");
+            System.out.println("6. exit");
+            int choice = sc.nextInt();
+
+            if(choice == 1){
+                pq.add(sc.nextInt());
+            }
+            else if(choice == 2){
+                System.out.println("Which element would you like to remove?");
+                pq.remove(sc.nextInt());
+            }
+            else if(choice == 3){
+                System.out.println(pq.poll());
+            }
+            else if(choice == 4){
+                System.out.println(pq.toString());
+            }
+            else if(choice == 5){
+                System.out.println(pq.peek());
+            }
+            else if(choice == 6){
+                break;
+            }
+
+        }
+        sc.close();
 
     }
 
